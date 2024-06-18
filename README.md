@@ -8,11 +8,6 @@ Welcome to the Alberti Protocol Pool! This API allows you to interact with commi
 https://pool.albertiprotocol.org
 ```
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-
 ## Installation
 
 1. Clone the repository:
