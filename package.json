@@ -1,0 +1,26 @@
+{
+  "name": "pool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertiProtocol/pool.git"
+  },
+  "author": "AlbertiProtocol",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlbertiProtocol/pool/issues"
+  },
+  "homepage": "https://github.com/AlbertiProtocol/pool#readme",
+  "dependencies": {
+    "@albertiprotocol/sdk": "^1.0.0",
+    "apollo-server": "^3.13.0",
+    "graphql-type-json": "^0.3.2",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  }
+}
