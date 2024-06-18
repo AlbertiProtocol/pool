@@ -1,0 +1,23 @@
+version: "3.1"
+
+services:
+  pool:
+    container_name: pool
+    restart: always
+    build: .
+    volumes:
+      - .:/usr/app/
+    ports:
+      - 4000:4000
+    networks:
+      - node-network
+  sqliteweb:
+    image: tomdesinto/sqliteweb
+    ports:
+      - 7800:8080
+    volumes:
+      - ./data/commits.db:/db/commits.db
+    command: commits.db
+networks:
+  node-network:
+    driver: bridge

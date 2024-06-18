@@ -85,14 +85,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createCommit(
-      commitAt: String!
-      data: JSON
-      publicKey: String!
-      signature: String!
-      type: String!
-      nonce: Int!
-    ): Commit
+    createCommit(commitAt: String!, data: JSON, publicKey: String!, signature: String!, type: String!, nonce: Int!): Commit
   }
 `;
 
@@ -123,9 +116,7 @@ const resolvers = {
 
     getAllAddresses: async () => {
       const uniqueAddresses = await Commit.findAll({
-        attributes: [
-          [sequelize.fn("DISTINCT", sequelize.col("address")), "address"],
-        ],
+        attributes: [[sequelize.fn("DISTINCT", sequelize.col("address")), "address"]],
       });
       return uniqueAddresses.map((commit) => commit.address);
     },
@@ -137,9 +128,7 @@ const resolvers = {
       const oldestEntry = await Commit.findOne({
         order: [["createdAt", "ASC"]],
       });
-      const oldestEntryDate = oldestEntry
-        ? oldestEntry.createdAt.toISOString()
-        : null;
+      const oldestEntryDate = oldestEntry ? oldestEntry.createdAt.toISOString() : null;
 
       const uniqueAddressescount = await Commit.count({
         distinct: true,
@@ -160,9 +149,7 @@ const resolvers = {
       const address = publicKeyToAddress(args.publicKey);
 
       if (!verifyCommit(args, difficulty)) {
-        throw new Error(
-          "Difficulty not met, Current difficulty is " + difficulty
-        );
+        throw new Error("Difficulty not met, Current difficulty is " + difficulty);
       }
 
       return await Commit.create({ ...args, address });
@@ -178,6 +165,10 @@ const server = new ApolloServer({
   },
 });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
+server
+  .listen({
+    port: process.env.PORT || 4000,
+  })
+  .then(({ url }) => {
+    console.log(`🚀 Server ready at ${url}`);
+  });
