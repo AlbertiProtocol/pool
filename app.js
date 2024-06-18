@@ -10,7 +10,7 @@ const difficulty = process.env.ALBERTI_DIFFICULTY || 4;
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "data.db",
+  storage: "./data/commits.db",
 });
 
 const Commit = sequelize.define(
