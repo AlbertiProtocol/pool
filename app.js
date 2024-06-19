@@ -105,9 +105,11 @@ const resolvers = {
         order: sequelize.random(),
       });
     },
+
     getCommit: async (_, { signature }) => {
       return await Commit.findByPk(signature);
     },
+
     getCommits: async (_, { page, perPage }) => {
       const offset = (page - 1) * perPage;
       return await Commit.findAll({
@@ -154,6 +156,7 @@ const resolvers = {
       const oldestEntry = await Commit.findOne({
         order: [["createdAt", "ASC"]],
       });
+
       const oldestEntryDate = oldestEntry
         ? oldestEntry.createdAt.toISOString()
         : null;
