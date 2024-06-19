@@ -81,17 +81,30 @@ const typeDefs = gql`
     getCommit(signature: String!): Commit
     getCommits(page: Int!, perPage: Int!): [Commit]
     getCommitsByAddress(address: String!, page: Int!, perPage: Int!): [Commit]
+    getRandomCommit: Commit
     getAllAddresses: [String]
   }
 
   type Mutation {
-    createCommit(commitAt: String!, data: JSON, publicKey: String!, signature: String!, type: String!, nonce: Int!): Commit
+    createCommit(
+      commitAt: String!
+      data: JSON
+      publicKey: String!
+      signature: String!
+      type: String!
+      nonce: Int!
+    ): Commit
   }
 `;
 
 const resolvers = {
   JSON: GraphQLJSON,
   Query: {
+    getRandomCommit: async () => {
+      return await Commit.findOne({
+        order: sequelize.random(),
+      });
+    },
     getCommit: async (_, { signature }) => {
       return await Commit.findByPk(signature);
     },
@@ -106,17 +119,31 @@ const resolvers = {
 
     getCommitsByAddress: async (_, { address, page, perPage }) => {
       const offset = (page - 1) * perPage;
-      return await Commit.findAll({
+
+      const datares = await Commit.findAll({
         where: { address },
         limit: perPage,
         offset: offset,
         order: [["createdAt", "DESC"]],
       });
+
+      if (datares.length == 0) {
+        return await Commit.findAll({
+          where: { publicKey: address },
+          limit: perPage,
+          offset: offset,
+          order: [["createdAt", "DESC"]],
+        });
+      }
+
+      return datares;
     },
 
     getAllAddresses: async () => {
       const uniqueAddresses = await Commit.findAll({
-        attributes: [[sequelize.fn("DISTINCT", sequelize.col("address")), "address"]],
+        attributes: [
+          [sequelize.fn("DISTINCT", sequelize.col("address")), "address"],
+        ],
       });
       return uniqueAddresses.map((commit) => commit.address);
     },
@@ -124,11 +151,12 @@ const resolvers = {
     getServerInfo: async () => {
       const totalEntries = await Commit.count();
 
-      // Find the oldest entry date
       const oldestEntry = await Commit.findOne({
         order: [["createdAt", "ASC"]],
       });
-      const oldestEntryDate = oldestEntry ? oldestEntry.createdAt.toISOString() : null;
+      const oldestEntryDate = oldestEntry
+        ? oldestEntry.createdAt.toISOString()
+        : null;
 
       const uniqueAddressescount = await Commit.count({
         distinct: true,
@@ -149,7 +177,9 @@ const resolvers = {
       const address = publicKeyToAddress(args.publicKey);
 
       if (!verifyCommit(args, difficulty)) {
-        throw new Error("Difficulty not met, Current difficulty is " + difficulty);
+        throw new Error(
+          "Difficulty not met, Current difficulty is " + difficulty
+        );
       }
 
       return await Commit.create({ ...args, address });
