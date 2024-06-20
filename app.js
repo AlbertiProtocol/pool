@@ -6,7 +6,7 @@ const GraphQLJSON = require("graphql-type-json");
 
 const { publicKeyToAddress, verifyCommit } = require("@albertiprotocol/sdk");
 
-const difficulty = process.env.ALBERTI_DIFFICULTY || 4;
+const difficulty = process.env.ALBERTI_DIFFICULTY || 5;
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
