@@ -51,7 +51,24 @@ const Commit = sequelize.define(
   }
 );
 
+const deleteOldCommits = async () => {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+  await Commit.destroy({
+    where: {
+      updatedAt: {
+        [Sequelize.Op.lt]: oneYearAgo,
+      },
+    },
+  });
+
+  console.log("Old commits deleted successfully");
+};
+
+// db init
 sequelize.sync();
+setInterval(deleteOldCommits, 24 * 60 * 60 * 1000);
 
 const typeDefs = gql`
   scalar JSON
