@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/AlbertiProtocol/pool#readme",
   "dependencies": {
-    "@albertiprotocol/sdk": "^1.0.0",
+    "@albertiprotocol/sdk": "^1.0.1",
     "apollo-server": "^3.13.0",
     "graphql-type-json": "^0.3.2",
     "sequelize": "^6.37.3",

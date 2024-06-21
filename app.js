@@ -7,7 +7,7 @@ const GraphQLJSON = require("graphql-type-json");
 const { publicKeyToAddress, verifyCommit } = require("@albertiprotocol/sdk");
 
 // Configurations
-const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 5;
+const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
 const port = parseInt(process.env.ALBERTI_PORT) || 4000;
 
 // Database setup
@@ -105,6 +105,7 @@ const typeDefs = gql`
     getCommit(signature: String!): Commit
     getCommits(page: Int!, perPage: Int!): [Commit]
     getCommitsByAddress(address: String!, page: Int!, perPage: Int!): [Commit]
+    getCommitsByParent(parent: String!): [Commit]
     getRandomCommit: Commit
     getAllAddresses: [String]
   }
@@ -140,6 +141,22 @@ const resolvers = {
         offset,
         order: [["createdAt", "DESC"]],
       });
+    },
+
+    getCommitsByParent: async (_, { parent }) => {
+      const commits = await Commit.findAll({
+        where: { type: "post" },
+      });
+
+      if (commits.length === 0) {
+        return [];
+      }
+
+      const childCommits = commits.filter(
+        (commit) => commit.data.parent === parent
+      );
+
+      return childCommits;
     },
 
     getCommitsByAddress: async (_, { address, page, perPage }) => {
