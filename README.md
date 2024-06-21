@@ -2,25 +2,13 @@
 
 Alberti Protcol Pool is a graphQL endpoint.
 
-### Running
+### Getting Started
 
-Simple Way - (requires NodeJs Installed)
+To run the server, ensure you have Node.js installed. Then, execute the following commands:
 
 ```
+npm install -g @albertiprotocol/pool
 npx @albertiprotocol/pool
-```
-
-Complex Way - A bash script to restart pool if it crashes 
-
-```sh
-#!/bin/bash
-
-while :
-do
-    npx @albertiprotocol/pool
-    echo "Process exited. Restarting..."
-    sleep 1  # Adjust the sleep time as needed
-done
 ```
 
 ## Usage
