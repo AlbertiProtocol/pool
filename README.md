@@ -8,7 +8,7 @@ To run the server, ensure you have Node.js installed. Then, execute the followin
 
 ```
 npm install -g @albertiprotocol/pool
-npx @albertiprotocol/pool
+npx albertipool
 ```
 
 ## Usage
