@@ -4,7 +4,7 @@
   "description": "@albertiprotocol/pool",
   "main": "app.js",
   "bin": {
-    "@albertiprotocol/pool": "./app.js"
+    "albertipool": "./app.js"
   },
   "scripts": {
     "start": "node app.js"
