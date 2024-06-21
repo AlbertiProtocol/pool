@@ -1,8 +1,11 @@
 {
-  "name": "pool",
+  "name": "@albertiprotocol/pool",
   "version": "1.0.0",
-  "description": "",
+  "description": "@albertiprotocol/pool",
   "main": "app.js",
+  "bin": {
+    "@albertiprotocol/pool": "./app.js"
+  },
   "scripts": {
     "start": "node app.js"
   },
