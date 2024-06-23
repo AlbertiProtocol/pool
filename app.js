@@ -177,9 +177,12 @@ const resolvers = {
   },
   Mutation: {
     createCommit: async (_, args) => {
+
+      console.log(args);
+
       if (!verifyCommit(args, difficulty)) {
         throw new Error(
-          `Difficulty not met. Current difficulty is ${difficulty}`
+          `Difficulty not met, Current difficulty is ${difficulty}`
         );
       }
 
