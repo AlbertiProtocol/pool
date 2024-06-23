@@ -4,6 +4,7 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const GraphQLJSON = require("graphql-type-json");
+
 const { verifyCommit } = require("@albertiprotocol/sdk");
 
 // Configurations
@@ -177,6 +178,7 @@ const resolvers = {
   },
   Mutation: {
     createCommit: async (_, args) => {
+      console.log("Creating commit");
 
       console.log(args);
 
@@ -187,6 +189,7 @@ const resolvers = {
       }
 
       try {
+        console.log("Creating commit in database");
         return await Commit.create({ ...args });
       } catch (error) {
         console.error("Error creating commit:", error);
