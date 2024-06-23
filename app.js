@@ -178,10 +178,6 @@ const resolvers = {
   },
   Mutation: {
     createCommit: async (_, args) => {
-      console.log("Creating commit");
-
-      console.log(args);
-
       if (!verifyCommit(args, difficulty)) {
         throw new Error(
           `Difficulty not met, Current difficulty is ${difficulty}`
@@ -189,7 +185,6 @@ const resolvers = {
       }
 
       try {
-        console.log("Creating commit in database");
         return await Commit.create({ ...args });
       } catch (error) {
         console.error("Error creating commit:", error);
@@ -212,3 +207,17 @@ sequelize.sync().then(() => {
     console.log(`🚀 Server ready at ${url}`);
   });
 });
+
+// delete entries older than 1 year
+setInterval(async () => {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+  await Commit.destroy({
+    where: {
+      createdAt: {
+        [Op.lt]: oneYearAgo,
+      },
+    },
+  });
+}, 1000 * 60 * 60 * 24); // 24 hours
