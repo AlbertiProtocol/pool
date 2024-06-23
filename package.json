@@ -1,6 +1,6 @@
 {
   "name": "@albertiprotocol/pool",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "@albertiprotocol/pool",
   "main": "app.js",
   "bin": {
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/AlbertiProtocol/pool#readme",
   "dependencies": {
-    "@albertiprotocol/sdk": "^1.0.3",
+    "@albertiprotocol/sdk": "^1.0.5",
     "apollo-server": "^3.13.0",
     "graphql-type-json": "^0.3.2",
     "sequelize": "^6.37.3",
