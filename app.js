@@ -4,7 +4,7 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const GraphQLJSON = require("graphql-type-json");
-const { publicKeyToAddress, verifyCommit } = require("@albertiprotocol/sdk");
+const { verifyCommit } = require("@albertiprotocol/sdk");
 
 // Configurations
 const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
@@ -21,16 +21,16 @@ const sequelize = new Sequelize({
 const Commit = sequelize.define(
   "Commit",
   {
-    commitAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
     data: {
       type: DataTypes.JSON,
       allowNull: true,
     },
-    address: {
+    type: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    nonce: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     publicKey: {
@@ -42,39 +42,11 @@ const Commit = sequelize.define(
       allowNull: false,
       primaryKey: true,
     },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    nonce: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     timestamps: true,
   }
 );
-
-// Periodic task to delete old commits
-const deleteOldCommits = async () => {
-  try {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
-    await Commit.destroy({
-      where: {
-        updatedAt: {
-          [Op.lt]: threeMonthsAgo,
-        },
-      },
-    });
-
-    console.log("Old commits deleted successfully");
-  } catch (error) {
-    console.error("Error deleting old commits:", error);
-  }
-};
 
 // GraphQL schema definition
 const typeDefs = gql`
@@ -84,45 +56,41 @@ const typeDefs = gql`
     difficulty: Int!
     currentTime: String!
     totalEntries: Int!
-    totalAddresses: Int!
+    totalUsers: Int!
     oldestEntryDate: String
   }
 
   type Commit {
-    commitAt: String!
     data: JSON
-    address: String!
-    publicKey: String!
-    signature: String!
     type: String!
     nonce: Int!
+    publicKey: String!
+    signature: String!
     createdAt: String!
     updatedAt: String!
   }
 
   type Query {
-    getServerInfo: ServerInfo!
+    serverInfo: ServerInfo!
+    getRandomCommit: Commit
     getCommit(signature: String!): Commit
     getCommits(page: Int!, perPage: Int!): [Commit]
-    getCommitsByAddress(address: String!, page: Int!, perPage: Int!): [Commit]
-    getCommitsByParent(parent: String!): [Commit]
-    getRandomCommit: Commit
-    getAllAddresses: [String]
+    getCommitsByUser(publicKey: String!, page: Int!, perPage: Int!): [Commit]
+    getCommitsByParent(signature: String!): [Commit]
+    getUsers: [String]
   }
 
   type Mutation {
     createCommit(
-      commitAt: String!
       data: JSON
-      publicKey: String!
-      signature: String!
       type: String!
       nonce: Int!
+      publicKey: String!
+      signature: String!
     ): Commit
   }
 `;
 
-// GraphQL resolvers
 const resolvers = {
   JSON: GraphQLJSON,
   Query: {
@@ -143,7 +111,7 @@ const resolvers = {
       });
     },
 
-    getCommitsByParent: async (_, { parent }) => {
+    getCommitsByParent: async (_, { signature }) => {
       const commits = await Commit.findAll({
         where: { type: "post" },
       });
@@ -153,69 +121,62 @@ const resolvers = {
       }
 
       const childCommits = commits.filter(
-        (commit) => commit.data.parent === parent
+        (commit) => commit.data.signature === signature
       );
 
       return childCommits;
     },
 
-    getCommitsByAddress: async (_, { address, page, perPage }) => {
+    getCommitsByUser: async (_, { publicKey, page, perPage }) => {
       const offset = (page - 1) * perPage;
 
-      let commits = await Commit.findAll({
-        where: { address },
+      const commits = await Commit.findAll({
+        where: { publicKey },
         limit: perPage,
         offset,
         order: [["createdAt", "DESC"]],
       });
 
-      if (commits.length === 0) {
-        commits = await Commit.findAll({
-          where: { publicKey: address },
-          limit: perPage,
-          offset,
-          order: [["createdAt", "DESC"]],
-        });
-      }
-
       return commits;
     },
 
-    getAllAddresses: async () => {
-      const uniqueAddresses = await Commit.findAll({
+    getUsers: async () => {
+      const uniqueUsers = await Commit.findAll({
         attributes: [
-          [sequelize.fn("DISTINCT", sequelize.col("address")), "address"],
+          [sequelize.fn("DISTINCT", sequelize.col("publicKey")), "publicKey"],
         ],
       });
-      return uniqueAddresses.map((commit) => commit.address);
+
+      return uniqueUsers.map((commit) => commit.publicKey);
     },
 
-    getServerInfo: async () => {
+    serverInfo: async () => {
       const totalEntries = await Commit.count();
+
       const oldestEntry = await Commit.findOne({
         order: [["createdAt", "ASC"]],
       });
+
       const oldestEntryDate = oldestEntry
         ? oldestEntry.createdAt.toISOString()
         : null;
-      const totalAddresses = await Commit.count({
+
+      const totalUsers = await Commit.count({
         distinct: true,
-        col: "address",
+        col: "publicKey",
       });
 
       return {
         difficulty,
         currentTime: new Date().toISOString(),
         totalEntries,
-        totalAddresses,
+        totalUsers,
         oldestEntryDate,
       };
     },
   },
   Mutation: {
     createCommit: async (_, args) => {
-      const address = publicKeyToAddress(args.publicKey);
-
       if (!verifyCommit(args, difficulty)) {
         throw new Error(
           `Difficulty not met. Current difficulty is ${difficulty}`
@@ -223,7 +184,7 @@ const resolvers = {
       }
 
       try {
-        return await Commit.create({ ...args, address });
+        return await Commit.create({ ...args });
       } catch (error) {
         console.error("Error creating commit:", error);
         throw new Error("Failed to create commit");
@@ -239,11 +200,9 @@ const server = new ApolloServer({
   context: async () => ({ sequelize }),
 });
 
-// Sync database and set interval for periodic tasks
-sequelize.sync();
-setInterval(deleteOldCommits, 24 * 60 * 60 * 1000);
-
-// Start the server
-server.listen({ port }).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
+// Sync database and start the server
+sequelize.sync().then(() => {
+  server.listen({ port }).then(({ url }) => {
+    console.log(`🚀 Server ready at ${url}`);
+  });
 });
