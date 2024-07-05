@@ -4,7 +4,7 @@ Alberti Protcol Pool is a graphQL endpoint.
 
 ### Getting Started
 
-To run the server, ensure you have Node.js installed. Then, execute the following commands:
+Install A Development Build 
 
 ```
 // install pool
@@ -14,12 +14,12 @@ npm install -g github:AlbertiProtocol/pool
 npx albertipool
 ```
 
-Optional : Open a tunnel 
+Install A Production Build 
 
 ```
-ssh -R 80:localhost:4000 serveo.net
+docker run -d -p 4000:4000 --name albertipool --restart unless-stopped ghcr.io/albertiprotocol/pool-docker:main
 ```
  
 ## Usage
 
-Once the server is running, you can access the API at `http://localhost:<port>`.
+Once the server is running, you can access the API at `http://localhost:4000`.
