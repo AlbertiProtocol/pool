@@ -28,7 +28,14 @@ npx albertipool
 Install a production build using Docker:
 
 ```bash
-docker run -d -p 4000:4000 -e ALBERTI_CLEANUP=60 -e ALBERTI_DIFFICULTY=4 --name albertipool --restart unless-stopped ghcr.io/albertiprotocol/pool:main
+docker run -d \
+  -p 4000:4000 \
+  -e ALBERTI_CLEANUP=60 \
+  -e ALBERTI_DIFFICULTY=4 \
+  --name albertipool \
+  --restart unless-stopped \
+  ghcr.io/albertiprotocol/pool:main
+
 ```
 
 ### Usage
