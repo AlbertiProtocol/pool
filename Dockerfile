@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 
 # Install aria2 (if needed)
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y git curl
 
 # Expose the required ports for aria2c and the Telegram bot
 EXPOSE 4000
