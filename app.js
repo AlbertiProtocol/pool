@@ -9,8 +9,8 @@ const { verifyCommit } = require("@albertiprotocol/sdk");
 
 // Configurations
 const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
-const port = parseInt(process.env.ALBERTI_PORT) || 4000;
 const databaseUrl = process.env.ALBERTI_DATABASE_URL;
+const cleanUpInterval = parseInt(process.env.ALBERTI_CLEANUP) || 400;
 
 // Database setup
 const sequelize = new Sequelize(
@@ -206,20 +206,19 @@ const server = new ApolloServer({
 
 // Sync database and start the server
 sequelize.sync().then(() => {
-  server.listen({ port }).then(({ url }) => {
+  server.listen().then(({ url }) => {
     console.log(`🚀 Server ready at ${url}`);
   });
 });
 
-// Delete entries older than 1 year
 setInterval(async () => {
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - cleanUpInterval);
 
   await Commit.destroy({
     where: {
       createdAt: {
-        [Op.lt]: oneYearAgo,
+        [Op.lt]: thirtyDaysAgo,
       },
     },
   });

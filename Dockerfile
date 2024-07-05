@@ -8,7 +8,9 @@ RUN npm ci
 
 COPY . .
 
-RUN apt-get update && apt-get install -y git curl
+RUN apt-get update
+
+RUN apt-get install -y git curl
 
 EXPOSE 4000
 
