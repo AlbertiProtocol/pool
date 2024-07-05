@@ -10,17 +10,16 @@ const { verifyCommit } = require("@albertiprotocol/sdk");
 // Configurations
 const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
 const port = parseInt(process.env.ALBERTI_PORT) || 4000;
-
-// Determine database dialect
-const databaseUrl = process.env.DATABASE_URL;
-const isPostgres = databaseUrl && databaseUrl.startsWith("postgres");
+const databaseUrl = process.env.ALBERTI_DATABASE_URL;
 
 // Database setup
-const sequelize = new Sequelize(databaseUrl || {
-  dialect: "sqlite",
-  storage: "./data/commits.db",
-  logging: false, // Disable logging for cleaner output
-});
+const sequelize = new Sequelize(
+  databaseUrl || {
+    dialect: "sqlite",
+    storage: "./data/commits.db",
+    logging: false,
+  }
+);
 
 // Commit model definition
 const Commit = sequelize.define(
