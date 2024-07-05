@@ -17,7 +17,7 @@ npx albertipool
 Install A Production Build 
 
 ```
-docker run -d -p 4000:4000 --name albertipool --restart unless-stopped ghcr.io/albertiprotocol/pool:main
+docker run -d -p 4000:4000 -e ALBERTI_DIFFICULTY=4 --name albertipool --restart unless-stopped ghcr.io/albertiprotocol/pool:main
 ```
  
 ## Usage
