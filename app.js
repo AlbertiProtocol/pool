@@ -9,7 +9,7 @@ const { verifyCommit } = require("@albertiprotocol/sdk");
 
 // Configurations
 const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
-const databaseUrl = process.env.ALBERTI_DATABASE_URL;
+const databaseUrl = process.env.ALBERTI_DATABASE;
 const cleanUpInterval = parseInt(process.env.ALBERTI_CLEANUP) || 400;
 
 // Database setup
