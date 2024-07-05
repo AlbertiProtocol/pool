@@ -11,8 +11,12 @@ const { verifyCommit } = require("@albertiprotocol/sdk");
 const difficulty = parseInt(process.env.ALBERTI_DIFFICULTY) || 3;
 const port = parseInt(process.env.ALBERTI_PORT) || 4000;
 
+// Determine database dialect
+const databaseUrl = process.env.DATABASE_URL;
+const isPostgres = databaseUrl && databaseUrl.startsWith("postgres");
+
 // Database setup
-const sequelize = new Sequelize({
+const sequelize = new Sequelize(databaseUrl || {
   dialect: "sqlite",
   storage: "./data/commits.db",
   logging: false, // Disable logging for cleaner output
@@ -208,7 +212,7 @@ sequelize.sync().then(() => {
   });
 });
 
-// delete entries older than 1 year
+// Delete entries older than 1 year
 setInterval(async () => {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
