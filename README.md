@@ -47,7 +47,7 @@ Once the server is running, access the API at `http://localhost:4000`.
 ### Environment Variables
 
 - **ALBERTI_DIFFICULTY**: Sets the difficulty level for commit verification (default is 3).
-- **ALBERTI_DATABASE_URL**: Specifies the database connection URL. If not provided, defaults to SQLite with a local file storage (`./data/commits.db`).
+- **ALBERTI_DATABASE**: Specifies the database connection URL. If not provided, defaults to SQLite with a local file storage (`./data/commits.db`).
 
 ## API Documentation
 
