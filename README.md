@@ -2,13 +2,6 @@
 
 Alberti Protocol Pool is a decentralized data relay and storage implementation built around the Alberti Protocol. This pool serves as a foundational component for securely storing and retrieving information using blockchain-inspired techniques.
 
-## Features
-
-- **Secure Commitment System**: Utilizes a commitment system to ensure data integrity and authenticity.
-- **GraphQL API**: Provides a GraphQL-based API for flexible and efficient data querying and manipulation.
-- **Automatic Cleanup**: Implements automated deletion of entries older than one year to maintain database cleanliness.
-- **Scalable**: Can be deployed in development or production environments with ease.
-
 ## Getting Started
 
 ### Installation
